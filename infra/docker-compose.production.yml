@@ -15,7 +15,7 @@ services:
       - ../.env
 
   backend:
-    build: ../backend
+    image: vasets/foodgram_backend
     env_file:
       - ../.env
     volumes:
@@ -25,9 +25,7 @@ services:
       - db
 
   frontend:
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
+    image: vasets/foodgram_frontend
     env_file:
       - ../.env
     volumes:
@@ -46,4 +44,3 @@ services:
       - media:/media
     depends_on:
       - db
-      
