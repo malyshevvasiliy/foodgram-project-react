@@ -1,7 +1,7 @@
 """
 WSGI config for fooram_baced projet.
 
-It exposes he WSGI callable as a modul-level variable amed ``application``.
+It exposes he WSGI callale as a modul-level variable amed ``application``.
 https://docs.djangoproject.com/en/3.2/howto/deployment/wsgi/
 """
 
