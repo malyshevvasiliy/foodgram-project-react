@@ -14,25 +14,19 @@ class User(AbstractUser):
         verbose_name="Адрес электронной почты",
         max_length=settings.MAX_LENGTH_EMAIL,
         unique=True,
-        blank=False,
-        null=False,
     )
     username = CharField(
         verbose_name="Логин",
         max_length=settings.MAX_LENGTH_USERNAME,
         unique=True,
-        null=False,
-        blank=False,
     )
     first_name = CharField(
         verbose_name="Имя",
         max_length=settings.MAX_LENGTH_USERNAME,
-        blank=False,
     )
     last_name = CharField(
         verbose_name="Фамилия",
         max_length=settings.MAX_LENGTH_USERNAME,
-        blank=False,
     )
     password = CharField(
         verbose_name="Пароль", max_length=settings.MAX_LENGTH_USERNAME
@@ -49,7 +43,7 @@ class User(AbstractUser):
     def clean(self):
         super().clean()
         if self.username.lower() == "me":
-            raise ValidationError('Имя пользователя "me" недопустимо.')
+            raise ValidationError("Имя пользователя недопустимо.")
         if not re.match(r"^[\w.@+-]+$", self.username):
             raise ValidationError(
                 "Имя пользователя должно содержать только буквы, цифры "
@@ -80,11 +74,11 @@ class Subscription(Model):
 
         constraints = [
             UniqueConstraint(
-                fields=["user", "author"], name="Уникальность_подписчиков"
+                fields=["user", "author"], name="Uniqueness_subscribers"
             ),
             CheckConstraint(
                 check=~Q(user=F("author")),
-                name="Ограничение_подписки_на_самого_себя",
+                name="Restriction_subscription_yourself",
             ),
         ]
 
