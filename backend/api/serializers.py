@@ -1,6 +1,4 @@
-import re
-
-from djoser.serializers import UserCreateSerializer, UserSerializer
+from djoser.serializers import UserSerializer
 
 from drf_extra_fields.fields import Base64ImageField
 from recipes.models import Ingredient, Recipe, RecipeIngredients, Tag
@@ -9,31 +7,6 @@ from rest_framework.serializers import (ModelSerializer,
                                         SerializerMethodField,
                                         StringRelatedField, ValidationError)
 from users.models import Subscription, User
-
-
-class CustomUserCreateSerializer(UserCreateSerializer):
-    """Сериализатор регистрации пользователей."""
-
-    class Meta:
-        model = User
-        fields = (
-            "email",
-            "id",
-            "username",
-            "first_name",
-            "last_name",
-            "password",
-        )
-
-    def validate_username(self, value):
-        if value.lower() == "me":
-            raise ValidationError('Имя пользователя "me" недопустимо.')
-        if not re.match(r"^[\w.@+-]+$", value):
-            raise ValidationError(
-                "Имя пользователя должно содержать только буквы, цифры "
-                "и следующие символы: @, ., +, -, _."
-            )
-        return value
 
 
 class CustomUserSerializer(UserSerializer):
@@ -91,31 +64,6 @@ class SubscriptionSerializer(CustomUserSerializer):
         if author == request.user:
             raise ValidationError("Вы не можете подписаться на себя.")
 
-    def subscribe(self, author):
-        """Метод создания подписки."""
-        request = self.context["request"]
-        self.validate_subscription(author)
-
-        Subscription.objects.create(user=request.user, author=author)
-        serializer = SubscriptionSerializer(
-            author,
-            context={
-                "request": request,
-                "format": self.format_kwarg,
-                "view": self,
-            },
-        )
-        return serializer.data
-
-    def unsubscribe(self, author):
-        """Метод удаления подписки."""
-        request = self.context["request"]
-        subscription = Subscription.objects.filter(
-            user=request.user, author=author
-        )
-        if subscription.exists():
-            subscription.delete()
-
     def get_recipes(self, obj):
         """Список рецептов в подписке."""
         recipes_limit = self.context["request"].GET.get("recipes_limit")
@@ -124,10 +72,6 @@ class SubscriptionSerializer(CustomUserSerializer):
         else:
             recipes = obj.recipes.all()
         return RecipeListSerializer(recipes, many=True, read_only=True).data
-
-    def get_recipes_count(self, obj):
-        """Общее количество рецептов в подписке."""
-        return obj.recipes.count()
 
 
 class TagSerializer(ModelSerializer):
@@ -299,18 +243,17 @@ class RecipeCreateSerializer(ModelSerializer):
         ingredients = validated_data.pop("recipeingredients")
         instance.ingredients.clear()
         instance.tags.clear()
-        super().update(instance, validated_data)
         instance.tags.set(tags)
         self.create_recipe_ingredient(instance, ingredients)
-        return instance
+        return super().update(instance, validated_data)
 
     def create_recipe_ingredient(self, recipe, ingredients):
         """Создает связи между рецептом и ингредиентами."""
         recipe_ingredients = []
 
-        for ing in ingredients:
-            ingredient = ing["id"]
-            ingredient_amount = ing["amount"]
+        for one_ingredient in ingredients:
+            ingredient = one_ingredient["id"]
+            ingredient_amount = one_ingredient["amount"]
             recipe_ingredient = RecipeIngredients(
                 recipe=recipe, ingredient=ingredient, amount=ingredient_amount
             )

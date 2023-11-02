@@ -1,10 +1,9 @@
-from collections import defaultdict
-
 from django.conf import settings
 from django.core.validators import MinValueValidator, RegexValidator
 from django.db.models import (CASCADE, CharField, DateTimeField, ForeignKey,
                               ImageField, ManyToManyField, Model,
-                              PositiveIntegerField, SlugField, TextField,
+                              PositiveSmallIntegerField,
+                              SlugField, TextField,
                               UniqueConstraint)
 from users.models import User
 
@@ -91,7 +90,7 @@ class Recipe(Model):
         verbose_name="Название рецепта", max_length=settings.MAX_LENGTH_NAME
     )
     text = TextField(verbose_name="Описание рецепта")
-    cooking_time = PositiveIntegerField(
+    cooking_time = PositiveSmallIntegerField(
         verbose_name="Время приготовления (в минутах)",
         validators=[
             MinValueValidator(
@@ -111,34 +110,6 @@ class Recipe(Model):
                 name="уникальность_сочетания_автор_название_рецепта",
             )
         ]
-
-    def get_shopping_list(self, user):
-        ingredients = (
-            RecipeIngredients.objects.filter(
-                recipe__shoppingcart__user=user
-            )
-            .values(
-                "ingredient__name", "ingredient__measurement_unit", "amount"
-            )
-            .order_by("ingredient__name")
-        )
-        return self.create_ingredient_list(ingredients)
-
-    def create_ingredient_list(self, queryset):
-        ingredient_data = defaultdict(int)
-        for ingredient in queryset:
-            ingredient_name = ingredient["ingredient__name"]
-            measurement_unit = ingredient["ingredient__measurement_unit"]
-            amount = ingredient["amount"]
-            key = f"{ingredient_name} ({measurement_unit})"
-            ingredient_data[key] += amount
-
-        ingredient_list = []
-        ingredient_list.append("Список продуктов: \n")
-        for ingredient, amount in ingredient_data.items():
-            ingredient_list.append(f"{ingredient} - {amount} \n")
-
-        return ingredient_list
 
     def is_favorited(self, user):
         """Проверяем, находится ли рецепт в избранном."""
@@ -167,7 +138,7 @@ class RecipeIngredients(Model):
         on_delete=CASCADE,
         related_name="recipeingredients",
     )
-    amount = PositiveIntegerField(
+    amount = PositiveSmallIntegerField(
         verbose_name="Количество ингредиентов",
         validators=[
             MinValueValidator(

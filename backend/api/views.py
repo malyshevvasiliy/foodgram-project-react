@@ -13,8 +13,9 @@ from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated, SAFE_METHODS
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
-from users.models import User
+from users.models import Subscription, User
 
 
 class CustomPageNumberPagination(PageNumberPagination):
@@ -96,9 +97,7 @@ class IngredientViewSet(ReadOnlyModelViewSet):
 class RecipeViewSet(ModelViewSet):
     """Viewset рецепта."""
 
-    queryset = (
-        Recipe.objects.prefetch_related("author", "tags", "ingredients").all()
-    )
+    queryset = Recipe.objects.all()
     permission_classes = [IsAuthorOrReadOnly]
     pagination_class = CustomPageNumberPagination
     filter_backends = (DjangoFilterBackend,)
@@ -111,7 +110,7 @@ class RecipeViewSet(ModelViewSet):
 
     def handle_action(self, request, pk, model_class):
         if request.method == "POST":
-            data, status = self.create_recipe_user(request, pk, model_class)
+            data, status = self.delete_recipe_user(request, pk, model_class)
         else:
             data, status = self.delete_recipe_user(request, pk, model_class)
         return data, status
@@ -141,35 +140,32 @@ class RecipeViewSet(ModelViewSet):
         )
         return response
 
-    def manage_recipe_user(self, request, pk, model, action):
+    def create_recipe_user(self, request, pk, model, action):
         """Cоздание/удаление связи рецепта и пользователем по id."""
         recipe = get_object_or_404(Recipe, id=pk)
-        if action == "create":
-            obj, created = model.objects.get_or_create(
+        created = model.objects.get_or_create(recipe=recipe, user=request.user)
+        if not created:
+            return (
+                {"message": f"Уже есть рецепт с id = {pk}."},
+                status.HTTP_400_BAD_REQUEST,
+            )
+        serializer = RecipeListSerializer(recipe, context={"request": request})
+        return (serializer.data, status.HTTP_201_CREATED)
+
+    def delete_recipe_user(self, request, pk, model, action):
+        """Cоздание/удаление связи рецепта и пользователем по id."""
+        recipe = get_object_or_404(Recipe, id=pk)
+        try:
+            favorite_recipe = model.objects.get(
                 recipe=recipe, user=request.user
             )
-            if not created:
-                return (
-                    {"message": f"Уже есть рецепт с id = {pk}."},
-                    status.HTTP_400_BAD_REQUEST,
-                )
-        elif action == "delete":
-            try:
-                favorite_recipe = model.objects.get(
-                    recipe=recipe, user=request.user
-                )
-                favorite_recipe.delete()
-            except model.DoesNotExist:
-                return (
-                    {"message": f"Рецепт с id = {pk} не найден."},
-                    status.HTTP_404_NOT_FOUND,
-                )
-        serializer = RecipeListSerializer(recipe, context={"request": request})
-        return (
-            (serializer.data, status.HTTP_201_CREATED)
-            if action == "create"
-            else (None, status.HTTP_204_NO_CONTENT)
-        )
+            favorite_recipe.delete()
+        except model.DoesNotExist:
+            return (
+                {"message": f"Рецепт с id = {pk} не найден."},
+                status.HTTP_404_NOT_FOUND,
+            )
+        return None, status.HTTP_204_NO_CONTENT
 
     def create_recipe_user(self, request, pk, model):
         """Создание связи между рецептом и пользователем по id рецепта."""
@@ -178,3 +174,34 @@ class RecipeViewSet(ModelViewSet):
     def delete_recipe_user(self, request, pk, model):
         """Удаление связи между рецептом и пользователем по id рецепта."""
         return self.manage_recipe_user(request, pk, model, action="delete")
+
+
+class SubscribeView(APIView):
+    """Операция подписки/отписки."""
+
+    permission_classes = [IsAuthenticated, ]
+
+    def post(self, request, id):
+        data = {
+            'user': request.user.id,
+            'author': id
+        }
+        serializer = SubscriptionSerializer(
+            data=data,
+            context={'request': request}
+        )
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, id):
+        author = get_object_or_404(User, id=id)
+        if Subscription.objects.filter(
+           user=request.user, author=author).exists():
+            subscription = get_object_or_404(
+                Subscription, user=request.user, author=author
+            )
+            subscription.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_400_BAD_REQUEST)

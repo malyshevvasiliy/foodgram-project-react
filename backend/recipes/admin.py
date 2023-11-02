@@ -31,6 +31,11 @@ class RecipeAdmin(ModelAdmin):
     list_filter = ("name", "author", "tags")
     empty_value_display = "-пусто-"
 
+    def get_queryset(self):
+        queryset = RecipeAdmin.objects.all()
+        author = self.kwargs['author']
+        return queryset.filter(author=author)
+
 
 @register(Tag)
 class TagAdmin(ModelAdmin):
