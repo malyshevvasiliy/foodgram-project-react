@@ -140,8 +140,8 @@ class RecipeViewSet(ModelViewSet):
         )
         return response
 
-    def create_recipe_user(self, request, pk, model, action):
-        """Cоздание/удаление связи рецепта и пользователем по id."""
+    def my_create_recipe_user(self, request, pk, model):
+        """Создание связи между рецептом и пользователем по id рецепта."""
         recipe = get_object_or_404(Recipe, id=pk)
         created = model.objects.get_or_create(recipe=recipe, user=request.user)
         if not created:
@@ -152,8 +152,8 @@ class RecipeViewSet(ModelViewSet):
         serializer = RecipeListSerializer(recipe, context={"request": request})
         return (serializer.data, status.HTTP_201_CREATED)
 
-    def delete_recipe_user(self, request, pk, model, action):
-        """Cоздание/удаление связи рецепта и пользователем по id."""
+    def my_delete_recipe_user(self, request, pk, model):
+        """удаление связи рецепта и пользователем по id."""
         recipe = get_object_or_404(Recipe, id=pk)
         try:
             favorite_recipe = model.objects.get(
@@ -169,11 +169,11 @@ class RecipeViewSet(ModelViewSet):
 
     def create_recipe_user(self, request, pk, model):
         """Создание связи между рецептом и пользователем по id рецепта."""
-        return self.manage_recipe_user(request, pk, model, action="create")
+        return self.my_create_recipe_user(request, pk, model)
 
     def delete_recipe_user(self, request, pk, model):
         """Удаление связи между рецептом и пользователем по id рецепта."""
-        return self.manage_recipe_user(request, pk, model, action="delete")
+        return self.my_delete_recipe_user(request, pk, model)
 
 
 class SubscribeView(APIView):
