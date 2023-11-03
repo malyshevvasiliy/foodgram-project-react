@@ -97,7 +97,10 @@ class IngredientViewSet(ReadOnlyModelViewSet):
 class RecipeViewSet(ModelViewSet):
     """Viewset рецепта."""
 
-    queryset = Recipe.objects.all()
+    queryset = Recipe.objects.all().select_related(
+        "author").prefetch_related(
+            "tag").prefetch_related(
+                "ingredient")
     permission_classes = [IsAuthorOrReadOnly]
     pagination_class = CustomPageNumberPagination
     filter_backends = (DjangoFilterBackend,)
@@ -154,12 +157,8 @@ class RecipeViewSet(ModelViewSet):
 
     def my_delete_recipe_user(self, request, pk, model):
         """удаление связи рецепта и пользователем по id."""
-        recipe = get_object_or_404(Recipe, id=pk)
         try:
-            favorite_recipe = model.objects.get(
-                recipe=recipe, user=request.user
-            )
-            favorite_recipe.delete()
+            model.objects.get(id=pk, user=request.user).delete()
         except model.DoesNotExist:
             return (
                 {"message": f"Рецепт с id = {pk} не найден."},
@@ -183,12 +182,12 @@ class SubscribeView(APIView):
 
     def post(self, request, id):
         data = {
-            'user': request.user.id,
-            'author': id
+            "user": request.user.id,
+            "author": id
         }
         serializer = SubscriptionSerializer(
             data=data,
-            context={'request': request}
+            context={"request": request}
         )
         if serializer.is_valid():
             serializer.save()
@@ -196,12 +195,10 @@ class SubscribeView(APIView):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, id):
-        author = get_object_or_404(User, id=id)
-        if Subscription.objects.filter(
-           user=request.user, author=author).exists():
-            subscription = get_object_or_404(
-                Subscription, user=request.user, author=author
-            )
-            subscription.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        try:
+            get_object_or_404(
+                Subscription, user=request.user, author=get_object_or_404(
+                    User, id=id)).delete()
+        except Subscription.DoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_204_NO_CONTENT)

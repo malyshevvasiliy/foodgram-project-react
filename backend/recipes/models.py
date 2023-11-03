@@ -111,14 +111,6 @@ class Recipe(Model):
             )
         ]
 
-    def is_favorited(self, user):
-        """Проверяем, находится ли рецепт в избранном."""
-        return self.favorite_set.filter(user=user).exists()
-
-    def is_in_shopping_cart(self, user):
-        """Проверяем, находится ли рецепт в корзине."""
-        return self.shoppingcart_set.filter(user=user).exists()
-
     def __str__(self):
         return self.name
 

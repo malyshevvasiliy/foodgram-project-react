@@ -32,9 +32,9 @@ class RecipeAdmin(ModelAdmin):
     empty_value_display = "-пусто-"
 
     def get_queryset(self):
-        queryset = RecipeAdmin.objects.all()
-        author = self.kwargs['author']
-        return queryset.filter(author=author)
+        queryset = Recipe.objects.all().select_related(
+            "author").prefetch_related("tag").prefetch_related("ingredient")
+        return queryset
 
 
 @register(Tag)
@@ -83,6 +83,11 @@ class FavoriteAdmin(ModelAdmin):
     search_fields = ("user", "recipe")
     list_filter = ("user", "recipe")
     empty_value_display = "-пусто-"
+
+    def get_queryset(self):
+        queryset = Favorite.objects.all().select_related(
+            "author").prefetch_related("tag").prefetch_related("ingredient")
+        return queryset
 
 
 @register(ShoppingCart)

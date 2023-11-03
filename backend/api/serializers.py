@@ -251,9 +251,9 @@ class RecipeCreateSerializer(ModelSerializer):
         """Создает связи между рецептом и ингредиентами."""
         recipe_ingredients = []
 
-        for one_ingredient in ingredients:
-            ingredient = one_ingredient["id"]
-            ingredient_amount = one_ingredient["amount"]
+        for ingredient in ingredients:
+            ingredient = ingredient["id"]
+            ingredient_amount = ingredient["amount"]
             recipe_ingredient = RecipeIngredients(
                 recipe=recipe, ingredient=ingredient, amount=ingredient_amount
             )
