@@ -1,6 +1,7 @@
 from django.contrib.admin import ModelAdmin, TabularInline, register
 from import_export.admin import ImportExportModelAdmin
 from import_export.resources import ModelResource
+
 from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredients,
                             ShoppingCart, Tag)
 
@@ -32,9 +33,9 @@ class RecipeAdmin(ModelAdmin):
     empty_value_display = "-пусто-"
 
     def get_queryset(self):
-        queryset = Recipe.objects.all().select_related(
-            "author").prefetch_related("tag").prefetch_related("ingredient")
-        return queryset
+        queryset = super().get_queryset()
+        return queryset.select_related(
+            "author").prefetch_related("tag", "ingredient")
 
 
 @register(Tag)
@@ -83,11 +84,6 @@ class FavoriteAdmin(ModelAdmin):
     search_fields = ("user", "recipe")
     list_filter = ("user", "recipe")
     empty_value_display = "-пусто-"
-
-    def get_queryset(self):
-        queryset = Favorite.objects.all().select_related(
-            "author").prefetch_related("tag").prefetch_related("ingredient")
-        return queryset
 
 
 @register(ShoppingCart)

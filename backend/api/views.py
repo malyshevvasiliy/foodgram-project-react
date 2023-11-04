@@ -158,7 +158,7 @@ class RecipeViewSet(ModelViewSet):
     def my_delete_recipe_user(self, request, pk, model):
         """удаление связи рецепта и пользователем по id."""
         try:
-            model.objects.get(id=pk, user=request.user).delete()
+            self.queryset.filter(id=pk, user=request.user).delete()
         except model.DoesNotExist:
             return (
                 {"message": f"Рецепт с id = {pk} не найден."},
@@ -196,9 +196,8 @@ class SubscribeView(APIView):
 
     def delete(self, request, id):
         try:
-            get_object_or_404(
-                Subscription, user=request.user, author=get_object_or_404(
-                    User, id=id)).delete()
+            self.queryset.filter(user=request.user, author=get_object_or_404(
+                User, id=id)).delete()
         except Subscription.DoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_204_NO_CONTENT)

@@ -2,8 +2,7 @@ from django.conf import settings
 from django.core.validators import MinValueValidator, RegexValidator
 from django.db.models import (CASCADE, CharField, DateTimeField, ForeignKey,
                               ImageField, ManyToManyField, Model,
-                              PositiveSmallIntegerField,
-                              SlugField, TextField,
+                              PositiveSmallIntegerField, SlugField, TextField,
                               UniqueConstraint)
 from users.models import User
 
