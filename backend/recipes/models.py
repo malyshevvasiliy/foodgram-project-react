@@ -9,7 +9,7 @@ from users.models import User
 
 
 class Tag(Model):
-    """Модель тег."""
+    """Модель тега."""
 
     name = CharField(
         verbose_name="Название",
