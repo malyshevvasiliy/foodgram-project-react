@@ -1,4 +1,6 @@
-from djoser.serializers import UserSerializer
+import re
+
+from djoser.serializers import UserCreateSerializer, UserSerializer
 from drf_extra_fields.fields import Base64ImageField
 from recipes.models import Ingredient, Recipe, RecipeIngredients, Tag
 from rest_framework.serializers import (ModelSerializer,
@@ -7,6 +9,31 @@ from rest_framework.serializers import (ModelSerializer,
                                         StringRelatedField, ValidationError)
 
 from users.models import Subscription, User
+
+
+class CustomUserCreateSerializer(UserCreateSerializer):
+    """Кастомный сериализатор регистрации пользователей."""
+
+    class Meta:
+        model = User
+        fields = (
+            "email",
+            "id",
+            "username",
+            "first_name",
+            "last_name",
+            "password",
+        )
+
+    def validate_username(self, value):
+        if value.lower() == "me":
+            raise ValidationError('Имя пользователя "me" недопустимо.')
+        if not re.match(r"^[\w.@+-]+$", value):
+            raise ValidationError(
+                "Имя пользователя должно содержать только буквы, цифры "
+                "и следующие символы: @, ., +, -, _."
+            )
+        return value
 
 
 class CustomUserSerializer(UserSerializer):
