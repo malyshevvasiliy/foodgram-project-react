@@ -49,7 +49,7 @@ class TagAdmin(ModelAdmin):
 
 
 class IngredientResource(ModelResource):
-    """Необходим для импорта ингредиентов для import_export."""
+    """Необходим для импорта ингредиентов."""
 
     class Meta:
         model = Ingredient
@@ -74,6 +74,10 @@ class RecipeIngredientsAdmin(ModelAdmin):
     search_fields = ("recipe", "ingredient")
     list_filter = ("recipe", "ingredient")
     empty_value_display = "-пусто-"
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.select_related("recipe").prefetch_related("ingredient")
 
 
 @register(Favorite)

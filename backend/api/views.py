@@ -3,11 +3,16 @@ from api.permissions import IsAdminOrReadOnly, IsAuthorOrReadOnly
 from api.serializers import (IngredientSerializer, RecipeCreateSerializer,
                              RecipeListSerializer, RecipeSerializer,
                              SubscriptionSerializer, TagSerializer)
+
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+
 from django_filters.rest_framework import DjangoFilterBackend
+
 from djoser.views import UserViewSet
+
 from recipes.models import Favorite, Ingredient, Recipe, ShoppingCart, Tag
+
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
@@ -15,7 +20,9 @@ from rest_framework.permissions import AllowAny, IsAuthenticated, SAFE_METHODS
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
-from users.models import Subscription, User
+
+
+from users.models import User
 
 
 class CustomPageNumberPagination(PageNumberPagination):
@@ -98,9 +105,7 @@ class RecipeViewSet(ModelViewSet):
     """Viewset рецепта."""
 
     queryset = Recipe.objects.all().select_related(
-        "author").prefetch_related(
-            "tag").prefetch_related(
-                "ingredient")
+        "author").prefetch_related("tag", "ingredient")
     permission_classes = [IsAuthorOrReadOnly]
     pagination_class = CustomPageNumberPagination
     filter_backends = (DjangoFilterBackend,)
@@ -157,13 +162,9 @@ class RecipeViewSet(ModelViewSet):
 
     def my_delete_recipe_user(self, request, pk, model):
         """удаление связи рецепта и пользователем по id."""
-        try:
-            self.queryset.filter(id=pk, user=request.user).delete()
-        except model.DoesNotExist:
-            return (
-                {"message": f"Рецепт с id = {pk} не найден."},
-                status.HTTP_404_NOT_FOUND,
-            )
+        if self.queryset.filter(id=pk, user=request.user).delete() == 0:
+            return ({"message": f"Рецепт с id = {pk} не найден."},
+                    status.HTTP_404_NOT_FOUND,)
         return None, status.HTTP_204_NO_CONTENT
 
     def create_recipe_user(self, request, pk, model):
@@ -195,9 +196,8 @@ class SubscribeView(APIView):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, id):
-        try:
-            self.queryset.filter(user=request.user, author=get_object_or_404(
-                User, id=id)).delete()
-        except Subscription.DoesNotExist:
+        if self.queryset.filter(user=request.user,
+                                author=get_object_or_404(
+                                    User, id=id)).delete() == 0:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_204_NO_CONTENT)
