@@ -33,7 +33,7 @@ class RecipeAdmin(ModelAdmin):
     empty_value_display = "-пусто-"
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = super().get_queryset(self)
         return queryset.select_related(
             "author").prefetch_related("tag", "ingredient")
 
@@ -76,7 +76,7 @@ class RecipeIngredientsAdmin(ModelAdmin):
     empty_value_display = "-пусто-"
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = super().get_queryset(self)
         return queryset.select_related("recipe").prefetch_related("ingredient")
 
 
