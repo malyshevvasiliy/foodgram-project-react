@@ -6,6 +6,7 @@ from recipes.models import Ingredient, Tag
 
 
 class Command(BaseCommand):
+    """Загрузка базы ингридиентов."""
 
     def add_arguments(self, parser):
         parser.add_argument("--path", type=str, help="file path")
