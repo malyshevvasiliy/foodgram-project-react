@@ -1,18 +1,8 @@
-from api.filters import IngredientFilter, RecipeFilter
-from api.permissions import IsAdminOrReadOnly, IsAuthorOrReadOnly
-from api.serializers import (IngredientSerializer, RecipeCreateSerializer,
-                             RecipeListSerializer, RecipeSerializer,
-                             SubscriptionSerializer, TagSerializer)
-
+from django.db.models import Count
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-
 from django_filters.rest_framework import DjangoFilterBackend
-
 from djoser.views import UserViewSet
-
-from recipes.models import Favorite, Ingredient, Recipe, ShoppingCart, Tag
-
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
@@ -21,7 +11,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
-
+from api.filters import IngredientFilter, RecipeFilter
+from api.permissions import IsAdminOrReadOnly, IsAuthorOrReadOnly
+from api.serializers import (IngredientSerializer, RecipeCreateSerializer,
+                             RecipeListSerializer, RecipeSerializer,
+                             SubscriptionSerializer, TagSerializer)
+from recipes.models import Favorite, Ingredient, Recipe, ShoppingCart, Tag
 from users.models import User
 
 
@@ -110,6 +105,7 @@ class RecipeViewSet(ModelViewSet):
     pagination_class = CustomPageNumberPagination
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
+    Recipe.objects.annotate(recipes_count=Count("recipes"))
 
     def get_serializer_class(self):
         if self.request.method in SAFE_METHODS:
