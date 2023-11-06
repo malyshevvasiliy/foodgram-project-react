@@ -2,12 +2,14 @@ import re
 
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from drf_extra_fields.fields import Base64ImageField
+
+from recipes.models import Ingredient, Recipe, RecipeIngredients, Tag
+
 from rest_framework.serializers import (ModelSerializer,
                                         PrimaryKeyRelatedField,
                                         SerializerMethodField,
                                         StringRelatedField, ValidationError)
 
-from recipes.models import Ingredient, Recipe, RecipeIngredients, Tag
 from users.models import Subscription, User
 
 
