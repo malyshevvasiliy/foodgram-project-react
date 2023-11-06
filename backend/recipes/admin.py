@@ -76,7 +76,8 @@ class RecipeIngredientsAdmin(ModelAdmin):
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
-        return queryset.select_related("recipe").prefetch_related("ingredient")
+        return queryset.select_related(
+            "recipeingredients").prefetch_related("ingredients")
 
 
 @register(Favorite)
