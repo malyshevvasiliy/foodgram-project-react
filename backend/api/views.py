@@ -4,7 +4,6 @@ from api.serializers import (IngredientSerializer, RecipeCreateSerializer,
                              RecipeListSerializer, RecipeSerializer,
                              SubscriptionSerializer, TagSerializer)
 
-from django.db.models import Count
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 
@@ -110,7 +109,6 @@ class RecipeViewSet(ModelViewSet):
     pagination_class = CustomPageNumberPagination
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
-    Recipe.objects.annotate(recipes_count=Count("recipes"))
 
     def get_serializer_class(self):
         if self.request.method in SAFE_METHODS:
