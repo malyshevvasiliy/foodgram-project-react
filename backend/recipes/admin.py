@@ -32,8 +32,8 @@ class RecipeAdmin(ModelAdmin):
     list_filter = ("name", "author", "tags")
     empty_value_display = "-пусто-"
 
-    def get_queryset(self):
-        return super().get_queryset().select_related(
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related(
             "author").prefetch_related("tags", "ingredients")
 
 
@@ -74,8 +74,8 @@ class RecipeIngredientsAdmin(ModelAdmin):
     list_filter = ("recipe", "ingredient")
     empty_value_display = "-пусто-"
 
-    def get_queryset(self):
-        queryset = super().get_queryset(self)
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
         return queryset.select_related("recipe").prefetch_related("ingredient")
 
 
