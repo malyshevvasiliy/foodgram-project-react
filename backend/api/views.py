@@ -104,8 +104,8 @@ class IngredientViewSet(ReadOnlyModelViewSet):
 class RecipeViewSet(ModelViewSet):
     """Viewset рецепта."""
 
-    queryset = Recipe.objects.all().select_related(
-        "author").prefetch_related("tag", "ingredient")
+    queryset = Recipe.objects.select_related(
+        "author").prefetch_related("tags", "ingredients")
     permission_classes = [IsAuthorOrReadOnly]
     pagination_class = CustomPageNumberPagination
     filter_backends = (DjangoFilterBackend,)
@@ -196,8 +196,6 @@ class SubscribeView(APIView):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, id):
-        if self.queryset.filter(user=request.user,
-                                author=get_object_or_404(
-                                    User, id=id)).delete() == 0:
+        if self.queryset.filter(user=request.user, id=id).delete() == 0:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_204_NO_CONTENT)
