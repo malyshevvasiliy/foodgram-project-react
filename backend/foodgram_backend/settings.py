@@ -122,19 +122,6 @@ REST_FRAMEWORK = {
     "PAGE_SIZE": 6,
 }
 
-DJOSER = {
-    "LOGIN_FIELD": "email",
-    "HIDE_USERS": False,
-    "SERIALIZERS": {
-        "user_create": "api.serializers.CustomUserCreateSerializer",
-        "user": "api.serializers.CustomUserSerializer",
-        "current_user": "api.serializers.CustomUserSerializer",
-    },
-    "PERMISSIONS": {
-        "user": ["rest_framework.permissions.AllowAny"],
-    },
-}
-
 MAX_LENGTH_NAME = 200
 MAX_LENGTH_HEX = 7
 MAX_LENGTH_EMAIL = 254
