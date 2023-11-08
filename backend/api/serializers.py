@@ -14,7 +14,7 @@ from users.models import Subscription, User
 
 
 class CustomUserCreateSerializer(UserCreateSerializer):
-    """Кастомный сериализатор регистрации пользователей."""
+    """Cериализатор регистрации пользователей."""
 
     class Meta:
         model = User
