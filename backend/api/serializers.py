@@ -37,12 +37,6 @@ class CustomUserCreateSerializer(UserCreateSerializer):
             )
         return value
 
-    def create(self, validated_data):
-        user = super().create(validated_data)
-        user.set_password(validated_data['password'])
-        user.save()
-        return user
-
 
 class CustomUserSerializer(UserSerializer):
     """Сериализатор отображения информации о пользователе."""
