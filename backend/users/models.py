@@ -32,8 +32,8 @@ class User(AbstractUser):
         verbose_name="Пароль", max_length=settings.MAX_LENGTH_USERNAME
     )
 
-    USERNAME_FIELD = "username"
-    REQUIRED_FIELDS = ["email", "first_name", "last_name"]
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = ["email", "password", "first_name", "last_name"]
 
     class Meta:
         ordering = ["id"]
@@ -49,13 +49,6 @@ class User(AbstractUser):
                 "Имя пользователя должно содержать только буквы, цифры "
                 "и следующие символы: @, ., +, -, _."
             )
-
-    def save(self, commit=True):
-        user = super(self).save(commit=False)
-        user.set_password(self.cleaned_data["password"])
-        if commit:
-            user.save()
-        return user
 
     def __str__(self):
         return self.username
