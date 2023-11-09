@@ -12,7 +12,7 @@ from users.models import Subscription, User
 
 
 class CustomUserSerializer(UserSerializer):
-    """Сериализатор отображения информации о пользователе."""
+    """Сериализатор информации о пользователе."""
 
     is_subscribed = SerializerMethodField()
 
