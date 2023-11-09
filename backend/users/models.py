@@ -50,6 +50,13 @@ class User(AbstractUser):
                 "и следующие символы: @, ., +, -, _."
             )
 
+    def save(self, commit=True):
+        user = super(self).save(commit=False)
+        user.set_password(self.cleaned_data["password"])
+        if commit:
+            user.save()
+        return user
+
     def __str__(self):
         return self.username
 

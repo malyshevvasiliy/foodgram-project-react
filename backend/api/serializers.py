@@ -1,6 +1,4 @@
-import re
-
-from djoser.serializers import UserCreateSerializer, UserSerializer
+from djoser.serializers import UserSerializer
 from drf_extra_fields.fields import Base64ImageField
 
 from recipes.models import Ingredient, Recipe, RecipeIngredients, Tag
@@ -11,31 +9,6 @@ from rest_framework.serializers import (ModelSerializer,
                                         StringRelatedField, ValidationError)
 
 from users.models import Subscription, User
-
-
-class CustomUserCreateSerializer(UserCreateSerializer):
-    """Cериализатор регистрации пользователей."""
-
-    class Meta:
-        model = User
-        fields = (
-            "email",
-            "id",
-            "username",
-            "first_name",
-            "last_name",
-            "password",
-        )
-
-    def validate_username(self, value):
-        if value.lower() == "me":
-            raise ValidationError('Имя пользователя "me" недопустимо.')
-        if not re.match(r"^[\w.@+-]+$", value):
-            raise ValidationError(
-                "Имя пользователя должно содержать только буквы, цифры "
-                "и следующие символы: @, ., +, -, _."
-            )
-        return value
 
 
 class CustomUserSerializer(UserSerializer):
@@ -60,6 +33,18 @@ class CustomUserSerializer(UserSerializer):
         if not request or request.user.is_anonymous:
             return False
         return obj.following.filter(user=request.user).exists()
+
+    def create(self, validated_data: dict) -> User:
+        """Создаёт нового пользователя."""
+        user = User(
+            email=validated_data["email"],
+            username=validated_data["username"],
+            first_name=validated_data["first_name"],
+            last_name=validated_data["last_name"],
+        )
+        user.set_password(validated_data["password"])
+        user.save()
+        return user
 
 
 class SubscriptionSerializer(CustomUserSerializer):
