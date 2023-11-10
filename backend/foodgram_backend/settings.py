@@ -127,7 +127,6 @@ DJOSER = {
     },
     "SERIALIZERS": {
         "users": "api.serializers.CustomUserSerializer",
-        "recipes": "api.serializers.CustomUserSerializer",
     },
 }
 
