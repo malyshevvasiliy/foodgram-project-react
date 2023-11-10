@@ -122,16 +122,13 @@ DJOSER = {
     "LOGIN_FIELD": "email",
     "HIDE_USERS": False,
     "PERMISSIONS": {
-        "resipe": ("rest_framework.permissions.AllowAny,",),
         "recipe_list": ("rest_framework.permissions.AllowAny",),
         "user": ("rest_framework.permissions.AllowAny",),
-        "user_list": ("rest_framework.permissions.AllowAny",),
+
     },
     "SERIALIZERS": {
         "user": "api.serializers.CustomUserSerializer",
         "user_list": "api.serializers.CustomUserSerializer",
-        "current_user": "api.serializers.CustomUserSerializer",
-        "user_create": "api.serializers.CustomUserSerializer",
     },
 }
 
