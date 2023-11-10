@@ -118,6 +118,23 @@ REST_FRAMEWORK = {
     ]
 }
 
+DJOSER = {
+    "LOGIN_FIELD": "email",
+    "HIDE_USERS": False,
+    "PERMISSIONS": {
+        "resipe": ("api.permissions.AuthorStaffOrReadOnly,",),
+        "recipe_list": ("api.permissions.AuthorStaffOrReadOnly",),
+        "user": ("api.permissions.OwnerUserOrReadOnly",),
+        "user_list": ("api.permissions.OwnerUserOrReadOnly",),
+    },
+    "SERIALIZERS": {
+        "user": "api.serializers.CustomUserSerializer",
+        "user_list": "api.serializers.CustomUserSerializer",
+        "current_user": "api.serializers.CustomUserSerializer",
+        "user_create": "api.serializers.CustomUserSerializer",
+    },
+}
+
 MAX_LENGTH_NAME = 200
 MAX_LENGTH_HEX = 7
 MAX_LENGTH_EMAIL = 254
