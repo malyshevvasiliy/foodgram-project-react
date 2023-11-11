@@ -137,7 +137,7 @@ class RecipeSerializer(ModelSerializer):
     """Сериализатор рецепта."""
 
     tags = TagSerializer(many=True)
-    author = CustomUserSerializer()
+    author = CustomUserSerializer(read_only=True)
     ingredients = RecipeIngredientSerializer(
         source="recipeingredients", many=True, read_only=True
     )
