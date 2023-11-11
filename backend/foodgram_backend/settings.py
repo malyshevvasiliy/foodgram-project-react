@@ -114,22 +114,10 @@ REST_FRAMEWORK = {
     ],
 
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ]
+        'rest_framework.authentication.TokenAuthentication',
+    ],
 }
 
-DJOSER = {
-    "LOGIN_FIELD": "email",
-    "HIDE_USERS": False,
-    "PERMISSIONS": {
-        "user": ("rest_framework.permissions.IsAuthenticatedOrReadOnly",),
-        "current_user": ("rest_framework.permissions.IsAuthenticatedOrReadOnly",),
-    },
-    "SERIALIZERS": {
-        "user": "api.serializers.CustomUserSerializer",
-        "user_list": "api.serializers.CustomUserSerializer",
-    },
-}
 
 MAX_LENGTH_NAME = 200
 MAX_LENGTH_HEX = 7
