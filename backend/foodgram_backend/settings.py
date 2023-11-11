@@ -114,7 +114,7 @@ REST_FRAMEWORK = {
     ],
 
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ]
 }
 
@@ -124,6 +124,7 @@ DJOSER = {
     "PERMISSIONS": {
         "user": ("djoser.permissions.CurrentUserOrAdminOrReadOnly",),
         "current_user": ("rest_framework.permissions.IsAuthenticatedOrReadOnly",),
+        "recipes": ("rest_framework.permissions.IsAuthenticatedOrReadOnly",),
     },
     "SERIALIZERS": {
         "user": "api.serializers.CustomUserSerializer",
