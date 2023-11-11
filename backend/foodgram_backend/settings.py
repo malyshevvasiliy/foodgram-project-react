@@ -124,6 +124,8 @@ DJOSER = {
     "PERMISSIONS": {
         "user": ("rest_framework.permissions.AllowAny",),
         "current_user": ("rest_framework.permissions.AllowAny",),
+        "resipe": ("rest_framework.permissions.AllowAny",),
+
 
     },
     "SERIALIZERS": {
