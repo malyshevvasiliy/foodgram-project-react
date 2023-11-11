@@ -122,7 +122,7 @@ DJOSER = {
     "LOGIN_FIELD": "email",
     "HIDE_USERS": False,
     "PERMISSIONS": {
-        "user": ("djoser.permissions.CurrentUserOrAdminOrReadOnly",),
+        "user": ("rest_framework.permissions.IsAuthenticatedOrReadOnly",),
         "current_user": ("rest_framework.permissions.IsAuthenticatedOrReadOnly",),
         "recipes": ("rest_framework.permissions.IsAuthenticatedOrReadOnly",),
     },
