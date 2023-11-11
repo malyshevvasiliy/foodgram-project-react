@@ -35,6 +35,9 @@ class CustomUserSerializer(UserSerializer):
             return False
         return obj.following.filter(user=request.user).exists()
 
+    def create(self, validated_data):
+        return User.objects.create_user(**validated_data)
+
 
 class SubscriptionSerializer(CustomUserSerializer):
     """Сериализатор подписки на других авторов."""
