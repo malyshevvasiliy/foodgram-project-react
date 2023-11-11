@@ -124,7 +124,6 @@ DJOSER = {
     "PERMISSIONS": {
         "user": ("rest_framework.permissions.IsAuthenticatedOrReadOnly",),
         "current_user": ("rest_framework.permissions.IsAuthenticatedOrReadOnly",),
-        "recipes": ("rest_framework.permissions.IsAuthenticatedOrReadOnly",),
     },
     "SERIALIZERS": {
         "user": "api.serializers.CustomUserSerializer",
