@@ -104,12 +104,6 @@ class Recipe(Model):
         ordering = ["-pub_date", "name"]
         verbose_name = "Рецепт"
         verbose_name_plural = "Рецепты"
-        constraints = [
-            UniqueConstraint(
-                fields=["author", "name"],
-                name="уникальность_сочетания_автор_название_рецепта",
-            )
-        ]
 
     def __str__(self):
         return self.name
@@ -146,7 +140,7 @@ class RecipeIngredients(Model):
         constraints = [
             UniqueConstraint(
                 fields=["recipe", "ingredient"],
-                name="уникальность_сочетания_рецепт_ингредиент",
+                name="unique_recipe_ingredient",
             )
         ]
 

@@ -14,23 +14,24 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         file_path = options["path"]
 
-        with open(file_path, encoding='utf-8') as f:
+        with open(file_path, encoding="utf-8") as f:
             jsondata = json.load(f)
-            if 'color' in jsondata[0]:
+            if "color" in jsondata[0]:
                 for line in jsondata:
                     if not Tag.objects.filter(
-                       slug=line['slug']).exists():
+                            slug=line["slug"]).exists():
                         Tag.objects.create(
-                            name=line['name'],
-                            color=line['color'],
-                            slug=line['slug'],
+                            name=line["name"],
+                            color=line["color"],
+                            slug=line["slug"],
                         )
-            elif 'measurement_unit' in jsondata[0]:
+            elif "measurement_unit" in jsondata[0]:
                 for line in jsondata:
                     if not Ingredient.objects.filter(
-                       name=line['name'],
-                       measurement_unit=line['measurement_unit']).exists():
+                            name=line["name"],
+                            measurement_unit=line[
+                                "measurement_unit"]).exists():
                         Ingredient.objects.create(
-                            name=line['name'],
-                            measurement_unit=line['measurement_unit']
+                            name=line["name"],
+                            measurement_unit=line["measurement_unit"]
                         )

@@ -27,5 +27,3 @@ sudo docker-compose exec backend python manage.py migrate
 Создайте суперюзера и соберите статику:
 sudo docker-compose exec backend python manage.py createsuperuser
 sudo docker-compose exec backend python manage.py collectstatic --no-input
-
-

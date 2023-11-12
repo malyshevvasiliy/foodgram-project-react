@@ -12,37 +12,38 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     env_file:
-      - ../.env
+      - ./.env
 
   backend:
     image: vasets/foodgram_backend:latest
     env_file:
-      - ../.env
+      - ./.env
     volumes:
-      - static_value:/app/static/
-      - media_value:/app/media/
-      - redoc:/app/api/docs/      
+      - static:/app/static/
+      - media:/app/media/
+      - ../data/:/app/data/
     depends_on:
       - db
 
   frontend:
     image: vasets/foodgram_frontend:latest
     env_file:
-      - ../.env
+      - ./.env
     volumes:
-      - static:/app/result_build
+      - ../frontend/:/app/result_build/
 
   nginx:
-    image: vasets/infra:latest
+    image: nginx:1.19.3
     env_file:
-      - ../.env
+      - ./.env
     ports:
       - "8000:80"
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - ../frontend/build:/usr/share/nginx/html/
       - ../docs/:/static/api/docs
-      - static_value::/var/html/static/
-      - media_value:/var/html/media/
+      - static:/var/html/static/
+      - media:/var/html/media/
     depends_on:
       - backend
       - frontend

@@ -14,18 +14,11 @@ class RecipeIngredientInline(TabularInline):
     min_num = 1
 
 
-class TagInline(TabularInline):
-    """Теги в рецептах."""
-
-    model = Tag.recipes.through
-    extra = 1
-
-
 @register(Recipe)
 class RecipeAdmin(ModelAdmin):
     """Управление рецептами в админке."""
 
-    inlines = [RecipeIngredientInline, TagInline]
+    inlines = [RecipeIngredientInline]
 
     list_display = ("id", "name", "author", "text", "cooking_time", "pub_date")
     search_fields = ("name", "author")

@@ -1,0 +1,17 @@
+[
+  {
+    "name": "Завтрак",
+    "color": "#32CD32",
+    "slug": "breakfast"
+  },
+  {
+    "name": "Обед",
+    "color": "#8A2BE2",
+    "slug": "lunch"
+  },
+  {
+    "name": "Ужин",
+    "color": "#D2691E",
+    "slug": "dinner"
+  }
+]
